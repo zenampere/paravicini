@@ -57,17 +57,30 @@ function skeleton(text) {
 }
 // Speech recognition + word-level comparison
 function norm(t) { return stripDirections(t).toLowerCase().replace(/[^a-z0-9'\s]/g, " ").split(/\s+/).filter(Boolean); }
-function listen() {
+// Keeps listening (restarting on Android's auto-stop) until stop() is called
+function startListening(onText) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) return Promise.reject(new Error("nosr"));
-  return new Promise((res, rej) => {
-    const r = new SR(); r.lang = "en-GB"; r.interimResults = false; r.maxAlternatives = 1; r.continuous = false;
-    let got = "";
-    r.onresult = (e) => { got = Array.from(e.results).map((x) => x[0].transcript).join(" "); };
-    r.onerror = (e) => rej(new Error(e.error || "error"));
-    r.onend = () => res(got);
-    try { r.start(); } catch (e) { rej(e); }
-  });
+  if (!SR) throw new Error("nosr");
+  let finals = [], interim = "", stopped = false, r;
+  const emit = () => onText((finals.join(" ") + " " + interim).trim());
+  const make = () => {
+    r = new SR(); r.lang = "en-GB"; r.interimResults = true; r.continuous = true;
+    r.onresult = (e) => {
+      interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) finals.push(t); else interim += t;
+      }
+      emit();
+    };
+    r.onerror = (e) => { if (e.error === "not-allowed" || e.error === "service-not-allowed") { stopped = true; onText(null, "denied"); } };
+    r.onend = () => { if (!stopped) { try { make(); } catch (e) {} } };
+    r.start();
+  };
+  make();
+  return {
+    stop: () => new Promise((res) => { stopped = true; const done = () => res((finals.join(" ") + " " + interim).trim()); r.onend = done; try { r.stop(); } catch (e) { done(); } }),
+  };
 }
 // LCS alignment: returns script words flagged hit/miss, plus extra words spoken
 function compare(script, spoken) {
@@ -134,15 +147,21 @@ function ParaviciniDrill() {
   const [learn, setLearn] = useState(false);
   const [mic, setMic] = useState("idle"); // idle | listening | result | nosr | denied
   const [result, setResult] = useState(null);
-  async function sayIt() {
-    setResult(null); setMic("listening");
+  const recRef = useRef(null);
+  const [heardSoFar, setHeardSoFar] = useState("");
+  function sayIt() {
+    setResult(null); setHeardSoFar("");
     try {
-      const heard = await listen();
-      setResult({ heard, ...compare(card.line, heard) }); setMic("result"); setRevealed(true);
-    } catch (e) {
-      setMic(e.message === "nosr" ? "nosr" : "denied");
-    }
+      recRef.current = startListening((t, err) => { if (err) { setMic("denied"); recRef.current = null; } else setHeardSoFar(t); });
+      setMic("listening");
+    } catch (e) { setMic("nosr"); }
   }
+  async function doneCheck() {
+    if (!recRef.current) return;
+    const heard = await recRef.current.stop(); recRef.current = null;
+    setResult({ heard, ...compare(card.line, heard) }); setMic("result"); setRevealed(true);
+  }
+  function cancelListen() { if (recRef.current) { recRef.current.stop(); recRef.current = null; } setMic("idle"); setHeardSoFar(""); }
   const [stage, setStage] = useState(0);
 
   useEffect(() => {
@@ -180,8 +199,8 @@ function ParaviciniDrill() {
     const next = { ...status, [card.id]: { ...st, misses: (st.misses || 0) + 1, learned: false } };
     save(next); advance();
   }
-  function advance() { setRevealed(false); setLearn(false); setStage(0); setMic("idle"); setResult(null); setPos((p) => (p + 1) % queue.length); }
-  function back() { setRevealed(false); setLearn(false); setStage(0); setMic("idle"); setResult(null); setPos((p) => (p - 1 + queue.length) % queue.length); }
+  function advance() { cancelListen(); setRevealed(false); setLearn(false); setStage(0); setResult(null); setPos((p) => (p + 1) % queue.length); }
+  function back() { cancelListen(); setRevealed(false); setLearn(false); setStage(0); setResult(null); setPos((p) => (p - 1 + queue.length) % queue.length); }
 
   async function runTrack() {
     runRef.current = true; setRunning(true);
@@ -264,7 +283,7 @@ function ParaviciniDrill() {
                     {STAGES[stage][0] === "full" && <Script text={card.line} />}
                     {STAGES[stage][0] === "first" && <p style={{ ...serif, fontSize: 20, lineHeight: 1.6, color: C.ink, margin: 0, letterSpacing: 0.5, wordSpacing: 4 }}>{skeleton(card.line)}</p>}
                     {STAGES[stage][0] === "turns" && <p style={{ ...serif, fontSize: 22, lineHeight: 1.6, color: C.brass, margin: 0 }}>{card.turns}</p>}
-                    {STAGES[stage][0] === "none" && <p style={{ ...serif, fontSize: 18, color: C.dim, margin: 0, fontStyle: "italic" }}>Cue only. Say it, then check.</p>}
+                    {STAGES[stage][0] === "none" && <p style={{ ...serif, fontSize: 18, color: C.dim, margin: 0, fontStyle: "italic" }}>{mic === "listening" ? (heardSoFar || "Listening…") : "Cue only. Say it, then check."}</p>}
                     <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
                       <Btn small onClick={() => speak(stripDirections(card.line), 0.9)} disabled={running}>Hear line</Btn>
                       <Btn small onClick={async () => { await speak(stripDirections(card.cue)); await speak(stripDirections(card.line), 0.9); }} disabled={running}>Cue then line</Btn>
@@ -272,7 +291,8 @@ function ParaviciniDrill() {
                         <Btn small tone="brass" onClick={() => setStage((x) => (STAGES[x + 1][0] === "turns" && !card.turns) ? x + 2 : x + 1)}>Said it, less help</Btn>
                       ) : (
                         <>
-                          <Btn small tone="brass" onClick={sayIt} disabled={running || mic === "listening"}>{mic === "listening" ? "Listening…" : "Say it, get checked"}</Btn>
+                          {mic === "listening" ? <Btn small tone="brass" onClick={doneCheck}>Done, check</Btn> : <Btn small tone="brass" onClick={sayIt} disabled={running}>Say it</Btn>}
+                      {mic === "listening" && <Btn small onClick={cancelListen}>Cancel</Btn>}
                           <Btn small onClick={() => setRevealed(true)}>Just show it</Btn>
                         </>
                       )}
@@ -303,9 +323,11 @@ function ParaviciniDrill() {
                       Say the line out loud, then tap to check
                     </button>
                     <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      <Btn small tone="brass" onClick={sayIt} disabled={running || mic === "listening"}>{mic === "listening" ? "Listening…" : "Say it, get checked"}</Btn>
+                      {mic === "listening" ? <Btn small tone="brass" onClick={doneCheck}>Done, check</Btn> : <Btn small tone="brass" onClick={sayIt} disabled={running}>Say it</Btn>}
+                      {mic === "listening" && <Btn small onClick={cancelListen}>Cancel</Btn>}
                       <Btn small onClick={() => { setLearn(true); setStage(0); }}>Don't know it yet, learn it</Btn>
                     </div>
+                    {mic === "listening" && <div style={{ color: C.dim, fontSize: 14, marginTop: 8, fontStyle: "italic", minHeight: 20 }}>{heardSoFar || "Listening…"}</div>}
                     {mic === "nosr" && <div style={{ color: C.warn, fontSize: 13, marginTop: 8 }}>This browser can't do speech recognition. Chrome or Safari on the phone should.</div>}
                     {mic === "denied" && <div style={{ color: C.warn, fontSize: 13, marginTop: 8 }}>Couldn't use the microphone here. If the app is inside Claude, check Chrome's site permissions for the microphone, and make sure the page is opened over https.</div>}
                   </>
