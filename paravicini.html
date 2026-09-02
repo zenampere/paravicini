@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#152220">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Paravicini</title>
+<style>html,body{margin:0;background:#152220} button,input{-webkit-tap-highlight-color:transparent}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+const DATA = {"beats": [{"num": 1, "title": "REFUGE BECOMES OPPORTUNITY", "job": "Get admitted, stabilize the room, and make necessity look like charm.", "engine": "Need is real; polish is the disguise."}, {"num": 2, "title": "WRITE MY OWN LEGEND", "job": "Make the strangers imagine a more dangerous story than the truth.", "engine": "If I author the mystery, I control the attention."}, {"num": 3, "title": "TEST THE HOUSEHOLD", "job": "Probe nerves, boundaries, trust, and how easily Mollie can be moved.", "engine": "Every joke is also reconnaissance."}, {"num": 4, "title": "THE POLICE BECOME REAL", "job": "Conceal the flash of alarm, then deny local knowledge without retreating.", "engine": "The game has acquired consequences."}, {"num": 5, "title": "WATCH AND CAMOUFLAGE", "job": "Turn observation into apparent delight.", "engine": "Laughter is cover while I calculate."}, {"num": 6, "title": "PUT MYSELF INSIDE THE MYSTERY", "job": "Offer useful details while remaining impossible to place.", "engine": "I feed the investigation and fog it at the same time."}, {"num": 7, "title": "STIR EVERY UNSTABLE BOND", "job": "Aggravate jealousy, redirect suspicion, and keep everyone reactive.", "engine": "A divided room watches itself instead of me."}, {"num": 8, "title": "BECOME THE MONSTER THEY EXPECT", "job": "Use appetite, touch, and nursery-rhyme cruelty to embody their fears.", "engine": "If they insist on a villain, I will give them a dazzling one."}, {"num": 9, "title": "DUEL TROTTER", "job": "Answer every question without surrendering a usable fact.", "engine": "Charm, counterattack, evade, and never visibly hurry."}, {"num": 10, "title": "LOSE CONTROL OF THE GAME—BRIEFLY", "job": "Keep joking until the reconstruction assigns me a place I did not choose.", "engine": "The smile survives; the freedom narrows."}], "cards": [{"id": "01.01", "beat": 1, "cue": "GILES: (off) Oh.", "line": "A thousand pardons. I am - where am I?", "tactic": "Disarm them before they can reject me.", "body": "Enter on genuine exhaustion; recover elegance one breath later.", "land": "- WHERE AM I"}, {"id": "01.02", "beat": 1, "cue": "GILES: This is Monkswell Manor Guest House.", "line": "But what stupendous good fortune! Madame! (He moves down to MOLLIE, takes her hand and kisses it.) (GILES crosses above the armchair centre.) What an answer to prayer. A guest house - and a charming hostess. My Rolls Royce, alas, has run into a snowdrift. Blinding snow everywhere. I do not know where I am. Perhaps, I think to myself, I shall freeze to death. And then I take a little bag, I stagger through the snow, I see before me big iron gates. A habitation! I am saved. Twice I fall into the snow as I come up your drive, but at last I arrive and immediately (He looks round.) despair turns to joy. (changing his manner) You can let me have a room - yes?", "turns": "FORTUNE → CRASH → CAR → WALK → ROOM", "tactic": "Flood the room with gratitude and theatrical scale.", "body": "Kiss the hand; let the room orbit Mollie for a moment.", "land": "A ROOM - YES"}, {"id": "01.03", "beat": 1, "cue": "MOLLIE: It's rather a small one, I'm afraid.", "line": "Naturally - naturally - you have other guests.", "tactic": "Normalize the inconvenience before they reconsider.", "body": "Two soft nods: agreement that closes the subject.", "land": "YOU HAVE OTHER GUESTS"}, {"id": "01.04", "beat": 1, "cue": "MOLLIE: We've only just opened this place as a guest house today, and so we're - we're rather new at it.", "line": "(leering at MOLLIE) Charming? charming...", "tactic": "Test how much innuendo the marriage can tolerate.", "body": "Hold Mollie one beat longer than Giles likes.", "land": "CHARMING CHARMING"}, {"id": "01.05", "beat": 1, "cue": "GILES: What about your luggage?", "line": "That is of no consequence. I have locked the car securely.", "tactic": "Shut down access to the car and its contents.", "body": "Still the body; make the sentence a locked door.", "land": "LOCKED THE CAR SECURELY"}, {"id": "01.06", "beat": 1, "cue": "GILES: But wouldn't it be better to get it in?", "line": "No, no. (He moves up to right of GILES.) I can assure you on such a night as this, there will be no thieves abroad. And for me, my wants are very simple. I have all I need - here - in this little bag. Yes, all that I need.", "tactic": "Reassure them with an irony only I enjoy.", "body": "Pat or protect the little bag on “all I need.”", "land": "ALL THAT I NEED"}, {"id": "01.07", "beat": 1, "cue": "MOLLIE: You'd better get thoroughly warm.", "line": "You have several guests, then?", "tactic": "Inventory the trapped company.", "body": "Scan the house, then return warmly to Mollie.", "land": "HAVE SEVERAL GUESTS THEN"}, {"id": "02.01", "beat": 2, "cue": "MOLLIE: There's Mrs. Boyle and Major Metcalf and Miss Casewell and a young man called Christopher Wren - and now - you.", "line": "Yes - the unexpected guest. The guest that you did not invite. The guest who just arrived - from nowhere - out of the storm. It sounds quite dramatic, does it not? Who am I? You do not know. Where do I come from? You do not know. Me, I am the man of mystery. (He laughs.) (MOLLIE laughs and looks at GILES, who grins feebly. PARAVICINI nods his head at MOLLIE in high good humour) But now, I tell you this. I complete the picture. From now on there will be no more arrivals. And no departures either. By tomorrow - perhaps even already - we are cut off from civilization. No butcher, no baker, no milkman, no postman, no daily papers - nobody and nothing but ourselves. That is admirable - admirable. It could not suit me better. My name, by the way, is Paravicini. (He moves down to the small armchair right.)", "turns": "ARRIVAL → QUESTIONS → MYSTERY → ISOLATION → NAME", "tactic": "Author my own legend before anyone else can.", "body": "Expand to the room; contract sharply on “My name.”", "land": "THE WAY IS PARAVICINI"}, {"id": "02.02", "beat": 2, "cue": "MOLLIE: Oh yes. Ours is Ralston.", "line": "Mr. and Mrs. Ralston? (He nods his head as they agree. He looks round him and moves up to right of MOLLIE) And this - is Monkswell Manor Guest House, you said? Good. Monkswell Manor Guest House. (He laughs.) Perfect. (He laughs.) Perfect. (He laughs and crosses to the fireplace.)", "tactic": "Fix names and place in memory.", "body": "Look, label, and file each fact; cross to the fire as if settled.", "land": "GUEST HOUSE PERFECT PERFECT"}, {"id": "03.01", "beat": 3, "cue": "MRS. BOYLE: All I say is that this Paravicini, or whatever he calls himself, seems to me... (PARAVICINI enters softly from the stairs left.)", "line": "Beware, dear lady. You talk of the devil and here he is. Ha, ha. (MRS. BOYLE jumps.)", "tactic": "Startle Boyle and seize the entrance.", "body": "Arrive inside her blind spot; enjoy the jump.", "land": "HE IS HA HA"}, {"id": "03.02", "beat": 3, "cue": "MRS. BOYLE: I didn't hear you come in.", "line": "I came in on tiptoe - like this. (He demonstrates, moving down centre.) Nobody ever hears me if I do not want them to. I find that very amusing.", "tactic": "Demonstrate that I can move unseen.", "body": "Make the demonstration precise, light, and faintly predatory.", "land": "FIND THAT VERY AMUSING"}, {"id": "03.03", "beat": 3, "cue": "MRS. BOYLE: Indeed?", "line": "(sitting in the armchair centre) Now there was a young lady...", "tactic": "Leave a threat-shaped story unfinished.", "body": "Settle comfortably; let the ellipsis do the work.", "land": "WAS A YOUNG LADY"}, {"id": "03.04", "beat": 3, "cue": "MRS. BOYLE: (rising) Well, I must get on with my letters. I'll see if it's a little warmer in the drawing-room.", "line": "My charming hostess looks upset. What is it, dear lady? (He leers at her.)", "tactic": "Invite confidence while displaying that I have noticed everything.", "body": "Soften the face; keep the eyes diagnostic.", "land": "IS IT DEAR LADY"}, {"id": "03.05", "beat": 3, "cue": "MOLLIE: Everything's rather difficult this morning. Because of the snow.", "line": "Yes. Snow makes things difficult, does it not? (He rises.) Or else it makes them easy. (He moves up to the refectory table and sits.) Yes - very easy.", "tactic": "Turn weather into a double-edged proposition.", "body": "Rise on “difficult”; land and still on “easy.”", "land": "YES - VERY EASY"}, {"id": "03.06", "beat": 3, "cue": "MOLLIE: I don't know what you mean.", "line": "No, there is quite a lot you do not know. I think, for one thing, that you do not know very much about running a guest house.", "tactic": "Establish intellectual dominance.", "body": "Sit above the problem and diagnose her calmly.", "land": "RUNNING A GUEST HOUSE"}, {"id": "03.07", "beat": 3, "cue": "MOLLIE: (moving to left of the sofa table and stubbing out her cigarette) I daresay we don't. But we mean to make a go of it.", "line": "Bravo - bravo! (He claps his hands and rises.)", "tactic": "Reward resistance so I can keep playing with it.", "body": "A real clap with an unreadable smile.", "land": "BRAVO - BRAVO"}, {"id": "03.08", "beat": 3, "cue": "MOLLIE: I'm not such a very bad cook...", "line": "(leering) You are without doubt an enchanting cook. (He moves behind the sofa table and takes MOLLIE's hand.) (MOLLIE draws it away and moves below the sofa down centre.) May I give you a little word of warning, Mrs. Ralston? (moving below the sofa) You and your husband must not be too trusting, you know. Have you references with these guests of yours?", "turns": "FLATTER → TOUCH → WARN → REFERENCES", "tactic": "Flatter, touch, and pivot into warning.", "body": "Take the hand, register the withdrawal, continue smoothly.", "land": "THESE GUESTS OF YOURS"}, {"id": "03.09", "beat": 3, "cue": "MOLLIE: Is that usual? (She turns to PARAVICINI) I always thought people just - just came?", "line": "It is advisable to know a little about the people who sleep under your roof. Take, for example, myself. I turn up saying that my car is overturned in a snowdrift. What do you know of me? Nothing at all! I may be a thief, a robber, (He moves slowly towards MOLLIE.) a fugitive from justice - a madman - even - a murderer.", "turns": "RULE → MY EXAMPLE → NOTHING → THIEF → MURDERER", "tactic": "Make myself the frightening example.", "body": "Advance only as the list darkens; finish close and quiet.", "land": "EVEN - A MURDERER"}, {"id": "03.10", "beat": 3, "cue": "MOLLIE: (backing away) Oh!", "line": "You see! And perhaps you know just as little of your other guests.", "tactic": "Transfer suspicion from me to everyone.", "body": "Open the gesture outward to the whole house.", "land": "OF YOUR OTHER GUESTS"}, {"id": "03.11", "beat": 3, "cue": "MRS. BOYLE: The drawing-room is far too cold to sit in. I shall write my letters in here. (She crosses to the large armchair.)", "line": "Allow me to poke the fire for you. (He moves right and does so.)", "tactic": "Restore civilized usefulness after the threat.", "body": "Give the hands an ordinary domestic job.", "land": "THE FIRE FOR YOU"}, {"id": "04.01", "beat": 4, "cue": "MRS. BOYLE: I suppose that's what we pay our police force for, nowadays, to go round enjoying themselves at winter sports. (MOLLIE crosses below the refectory table to the window.)", "line": "(moving up to centre of the refectory table; in a fierce whisper to MOLLIE) Why did you send for the police, Mrs. Ralston?", "tactic": "Demand the one fact that threatens me.", "body": "Whisper fiercely; this is the first involuntary contraction.", "land": "THE POLICE MRS RALSTON"}, {"id": "04.02", "beat": 4, "cue": "TROTTER: (turning his back to the audience) It's not necessary, sir. It'll save time if everybody's present. If I might sit at this table? (He moves up to the right end of the refectory table.)", "line": "I beg your pardon. (He moves behind the table to the left end.)", "tactic": "Yield the chair without yielding status.", "body": "A tiny formal bow; relocate with exaggerated civility.", "land": "I BEG YOUR PARDON"}, {"id": "04.03", "beat": 4, "cue": "MRS. BOYLE: Well, yes. All except Mr. - (She looks at PARAVICINI)", "line": "Paravicini. (He moves to the left end of the refectory table) My car overturned in a snowdrift.", "tactic": "Control the pronunciation and the name.", "body": "Place each syllable like a calling card.", "land": "OVERTURNED IN A SNOWDRIFT"}, {"id": "04.04", "beat": 4, "cue": "TROTTER: …Now, there's just one thing I want to know and I want to know it quick. Which one of you is it that has some connection with that business at Longridge Farm? (There is a dead silence.)", "line": "Para - Paravicini. But, my dear Inspector, I know nothing, but nothing of what you have been talking about. I am a stranger in this country. I know nothing of these local affairs of bygone years.", "tactic": "Control the pronunciation and the name.", "body": "Place each syllable like a calling card.", "land": "AFFAIRS OF BYGONE YEARS"}, {"id": "05.01", "beat": 5, "cue": "MRS. BOYLE: One tries to do a public duty and all one gets is abuse.", "line": "You must forgive me, but indeed I find all this most amusing. I enjoy myself greatly. (Still laughing, PARAVICINI exits down left to the drawing-room. MOLLIE moves to right of the sofa.)", "tactic": "Camouflage calculation as delighted spectatorship.", "body": "Laugh fully enough to make the room underestimate me.", "land": "I ENJOY MYSELF GREATLY"}, {"id": "06.01", "beat": 6, "cue": "TROTTER: I see. (He moves to right of the sofa table.) Mr. Paravicini?", "line": "I have told you. (He rises and moves to left of the sofa.) I was playing the piano in the drawing-room - through there, Inspector. (He gestures left)", "tactic": "Hold to the prepared alibi.", "body": "Rise without haste; point out the geography.", "land": "- THROUGH THERE INSPECTOR"}, {"id": "06.02", "beat": 6, "cue": "TROTTER: I'm not an Inspector - just a Sergeant, Mr. Paravicini. Did anybody hear you playing the piano?", "line": "(smiling) I do not expect so. I was playing very, very softly - with one finger - so.", "tactic": "Make the alibi vivid but conveniently unverifiable.", "body": "Offer one finger as a visual proof.", "land": "ONE FINGER - SO"}, {"id": "06.03", "beat": 6, "cue": "TROTTER: (sharply) Is that so?", "line": "Yes. It is a very catchy little tune. It is - how shall I say? - a haunting little tune? Don't you all agree?", "tactic": "Plant the tune deeper in everyone’s head.", "body": "Taste “haunting”; invite the room to agree.", "land": "DON'T YOU ALL AGREE"}, {"id": "06.04", "beat": 6, "cue": "MOLLIE: I think it's horrible.", "line": "And yet - it runs in people's head. Someone was whistling it, too.", "tactic": "Add a clue while making it feel casual.", "body": "Let the thought arrive as if just remembered.", "land": "WAS WHISTLING IT TOO"}, {"id": "06.05", "beat": 6, "cue": "TROTTER: Whistling it? Where?", "line": "I am not sure. Perhaps in the front hall - perhaps on the stairs - perhaps even upstairs in a bedroom.", "tactic": "Scatter the possible location everywhere.", "body": "Place each “perhaps” in a different part of the house.", "land": "UPSTAIRS IN A BEDROOM"}, {"id": "06.06", "beat": 6, "cue": "TROTTER: Who was whistling Three Blind Mice?", "line": "No, no, Inspector - I beg your pardon - Sergeant, I would not do a thing like that.", "tactic": "Yield the chair without yielding status.", "body": "A tiny formal bow; relocate with exaggerated civility.", "land": "A THING LIKE THAT"}, {"id": "06.07", "beat": 6, "cue": "TROTTER: Well, go on, you were playing the piano.", "line": "(holding out a finger) With one finger - so... And then I hear the radio - playing very loud - someone is shouting on it. It offended my ears. And after that - suddenly - I hear Mrs. Ralston scream. (He sits at the left end of the sofa.)", "turns": "ONE FINGER → RADIO → OFFENCE → SCREAM", "tactic": "Complete the sensory timeline.", "body": "Finger → offended ear → Mollie’s scream; three clean images.", "land": "HEAR MRS RALSTON SCREAM"}, {"id": "06.08", "beat": 6, "cue": "TROTTER: It's usual. But all criminals slip up sooner or later.", "line": "I wonder, Sergeant, if that's really true?", "tactic": "Needle Trotter’s certainty.", "body": "Stay seated; make the question almost companionable.", "land": "IF THAT'S REALLY TRUE"}, {"id": "07.01", "beat": 7, "cue": "GILES: (angrily) What the hell are you...?", "line": "Now, now. I do hope you young people are not both saying a little more than you mean. One is so apt to in these lovers' quarrels.", "tactic": "Step between the couple and claim senior authority.", "body": "Physically divide them before offering wisdom.", "land": "IN THESE LOVERS' QUARRELS"}, {"id": "07.02", "beat": 7, "cue": "GILES: \"Lovers' quarrels!\" That's good. (He moves to left of the refectory table.)", "line": "(moving down to the small armchair right) Quite so. Quite so. I know just how you feel. I have been through all this myself when I was a younger man. Jeunesse - jeunesse - as the poet says. Not been married long, I imagine?", "tactic": "Use age as camouflage and sexual competition.", "body": "Settle like a connoisseur remembering old victories.", "land": "MARRIED LONG I IMAGINE"}, {"id": "07.03", "beat": 7, "cue": "GILES: (crossing to the fire) It's no business of yours, Mr. Paravicini...", "line": "(moving down centre) No, no, no business at all. But I just came in to say that the Sergeant cannot find his skis and I'm afraid he is very annoyed.", "tactic": "Drop fresh danger into the quarrel.", "body": "Deliver the news lightly; watch Giles receive it.", "land": "HE IS VERY ANNOYED"}, {"id": "07.04", "beat": 7, "cue": "GILES: What's that?", "line": "(moving to face GILES) He wants to know if you have by any chance moved them, Mr. Ralston.", "tactic": "Make the accusation sound like a practical question.", "body": "Face Giles directly and hold.", "land": "MOVED THEM MR RALSTON"}, {"id": "07.05", "beat": 7, "cue": "TROTTER: Somebody's taken them.", "line": "(moving to right of TROTTER) What made you happen to look for them?", "tactic": "Interrogate the interrogator.", "body": "Move into Trotter’s space with innocent curiosity.", "land": "TO LOOK FOR THEM"}, {"id": "07.06", "beat": 7, "cue": "TROTTER: The snow is still lying. I need help here, reinforcements. I was going to ski over to the police station at Market Hampton to report on the situation.", "line": "And now you can't - dear, dear... Somebody's seen to it that you certainly shan't do that. But there could be another reason, couldn't there?", "tactic": "Invite the room to invent a worse possibility.", "body": "Slow before “another”; do not supply it too quickly.", "land": "ANOTHER REASON COULDN'T THERE"}, {"id": "07.07", "beat": 7, "cue": "TROTTER: Yes, what?", "line": "Somebody may want to get away.", "tactic": "Name flight and watch who reacts.", "body": "Release the line to the whole room.", "land": "WANT TO GET AWAY"}, {"id": "07.08", "beat": 7, "cue": "MOLLIE: Nothing.", "line": "(chuckling) So our young architect has hooked it, has he? Very, very interesting.", "tactic": "Convert Christopher’s absence into suspicious entertainment.", "body": "A small chuckle; clock every face.", "land": "HE VERY VERY INTERESTING"}, {"id": "07.09", "beat": 7, "cue": "TROTTER: Now, listen, you people. This is a serious matter. Somebody has removed my only chance of communication with the outside world. I want everybody here - at once.", "line": "I think Miss Casewell has gone upstairs.", "tactic": "Supply location while keeping myself central.", "body": "Answer promptly, as the helpful observer.", "land": "CASEWELL HAS GONE UPSTAIRS"}, {"id": "07.10", "beat": 7, "cue": "MOLLIE: I'll get her. (MOLLIE exits up the stairs. TROTTER moves to left of the arch up left.)", "line": "(moving down right) I left Major Metcalf in the dining-room. (He opens the door down right and looks in.) Major Metcalf! He's not there now.", "tactic": "Map the remaining bodies.", "body": "Check the room physically, then report the discrepancy.", "land": "HE'S NOT THERE NOW"}, {"id": "07.11", "beat": 7, "cue": "MAJOR METCALF: Skis? (He moves to left of the sofa.)", "line": "(moving to the archway up right and calling) Mr Ralston! (GILES enters up right and stands below the arch. PARAVICINI returns and sits in the small armchair down right.)", "tactic": "Summon Giles and reassemble the board.", "body": "Call clearly, then reclaim the chair.", "land": "MR RALSTON"}, {"id": "08.01", "beat": 8, "cue": "TROTTER: Yes, Miss Casewell. I do. Three blind mice. Two mice cancelled out - a third mouse still to be dealt with. (moving down centre, with his back to the audience) There are six of you here listening to me. One of you's a killer!", "line": "Talking of chicken, dear lady, have you ever tried chicken's livers served on toast that has been thickly smeared with foie gras, with a very thin rasher of bacon just touched with a soupçon of fresh mustard? I will come with you to the kitchen and we will see what we can concoct together. A charming occupation. (PARAVICINI takes MOLLIE's right arm and starts to move up right.)", "turns": "APPETITE → RECIPE → KITCHEN → POSSESSION", "tactic": "Overwhelm Mollie with sensual appetite and proprietary charm.", "body": "Savor the ingredients; take her arm only after the picture is irresistible.", "land": "TOGETHER A CHARMING OCCUPATION"}, {"id": "08.02", "beat": 8, "cue": "GILES: (taking MOLLIE's left arm) I'm helping my wife, Paravicini.", "line": "Your husband is afraid for you. Quite natural under the circumstances. He doesn't fancy your being alone with me. (MOLLIE throws off PARAVICINI's arm.) It is my sadistic tendencies he fears - not my dishonourable ones. (He leers.) Alas, what an inconvenience the husband always is. (He kisses her fingers.) Arrivederci...", "tactic": "Expose Giles’s jealousy as fear.", "body": "Speak to Mollie about Giles while letting Giles hear every word.", "land": "HUSBAND ALWAYS IS ARRIVEDERCI"}, {"id": "08.03", "beat": 8, "cue": "MOLLIE: I'm sure Giles doesn't think...", "line": "He is very wise. Take no chances. (He moves down to right of the armchair centre.) Can I prove to you or to him or to our dogged Sergeant that I am not a homicidal maniac? So difficult to prove a negative. And suppose that instead I am really... (He hums the tune of \"Three Blind Mice.\")", "tactic": "Turn suspicion into my chosen costume.", "body": "Move away, then build the homicidal image from safety.", "land": "INSTEAD I AM REALLY"}, {"id": "08.04", "beat": 8, "cue": "MOLLIE: Oh don't. (She moves to the back of the armchair centre.)", "line": "But such a gay little tune? Don't you think? She cut off their tails with a carving knife - snick, snick, snick - delicious. Just what a child would adore. Cruel little things, children. (leaning forward) Some of them never grow up.", "turns": "GAY → KNIFE → CHILDREN → NEVER GROW UP", "tactic": "Make cruelty sound deliciously childish.", "body": "Mime the three cuts crisply; go quiet on “never grow up.”", "land": "THEM NEVER GROW UP"}, {"id": "08.05", "beat": 8, "cue": "MOLLIE: It's silly of me. But you see - I found her. Her face was all purple. I can't forget it...", "line": "I know. It's difficult to forget things, isn't it? You aren't really the forgetting kind.", "tactic": "Touch Mollie’s buried wound.", "body": "Drop all decoration; look directly at her.", "land": "REALLY THE FORGETTING KIND"}, {"id": "09.01", "beat": 9, "cue": "TROTTER: (rising and crossing to left of PARAVICINI) What did you say to the lady to upset her, sir?", "line": "Me, Sergeant? Oh, just a little innocent fun. I've always been fond of a little joke.", "tactic": "Minimize the damage and provoke Trotter.", "body": "Receive the accusation with immaculate surprise.", "land": "OF A LITTLE JOKE"}, {"id": "09.02", "beat": 9, "cue": "TROTTER: There's nice fun - and there's fun that's not so nice.", "line": "(moving down centre) Now I do wonder what you mean by that, Sergeant?", "tactic": "Force Trotter to state the charge.", "body": "Advance into the duel without raising volume.", "land": "MEAN BY THAT SERGEANT"}, {"id": "09.03", "beat": 9, "cue": "TROTTER: I've been doing a little wondering about you, sir.", "line": "Indeed?", "tactic": "Make him spend more words than I do.", "body": "One eyebrow; no rescue.", "land": "INDEED"}, {"id": "09.04", "beat": 9, "cue": "TROTTER: I've been wondering about that car of yours, and how it happened to overturn in a snowdrift (He pauses and draws the right curtain.) so conveniently.", "line": "Inconveniently, you mean, don't you, Sergeant?", "tactic": "Correct his framing and expose the trap.", "body": "Polish the one dangerous word.", "land": "MEAN DON'T YOU SERGEANT"}, {"id": "09.05", "beat": 9, "cue": "TROTTER: (moving down to right of PARAVICINI) That rather depends on the way you're looking at it. Just where were you bound for, by the way, when you had this - accident?", "line": "Oh - I was on my way to see a friend.", "tactic": "Offer a plausible fact with no handles.", "body": "Make “friend” warm and absolutely closed.", "land": "TO SEE A FRIEND"}, {"id": "09.06", "beat": 9, "cue": "TROTTER: In this neighbourhood?", "line": "Not so very far from here.", "tactic": "Narrow nothing.", "body": "A tiny shrug; enjoy the useless measurement.", "land": "VERY FAR FROM HERE"}, {"id": "09.07", "beat": 9, "cue": "TROTTER: And what was the name and address of this friend?", "line": "Now really, Sergeant Trotter, does that matter now? I mean, it has nothing to do with this predicament, has it? (He sits at the left end of the sofa.)", "tactic": "Challenge relevance and seize the frame.", "body": "Sit before he has won the point.", "land": "THIS PREDICAMENT HAS IT"}, {"id": "09.08", "beat": 9, "cue": "TROTTER: We always like the fullest information. What did you say this friend's name was?", "line": "I didn't say. (He takes a cigar from a case in his pocket.)", "tactic": "Refuse the invented premise.", "body": "Take out the cigar: I have time.", "land": "I DIDN'T SAY"}, {"id": "09.09", "beat": 9, "cue": "TROTTER: No, you didn't say. And it seems you're not going to say. (He sits on the right arm of the sofa.) Now that's very interesting.", "line": "But there might be - so many reasons. An amour - discretion. These jealous husbands. (He pierces the cigar.)", "turns": "POSSIBILITIES → AMOUR → DISCRETION → HUSBANDS", "tactic": "Turn secrecy into romance rather than crime.", "body": "Pierce the cigar on “jealous husbands.”", "land": "DISCRETION THESE JEALOUS HUSBANDS"}, {"id": "09.10", "beat": 9, "cue": "TROTTER: Rather old to be running round with the ladies at your time of life, aren't you?", "line": "My dear Sergeant, I am not, perhaps, quite so old as I look.", "tactic": "Destabilize the age he thought he knew.", "body": "Let one flash of the younger man appear.", "land": "OLD AS I LOOK"}, {"id": "09.11", "beat": 9, "cue": "TROTTER: That's just what I've been thinking, sir.", "line": "What? (He lights the cigar.)", "tactic": "Make him repeat the dangerous observation.", "body": "Light the cigar; eyes stay on him.", "land": "WHAT"}, {"id": "09.12", "beat": 9, "cue": "TROTTER: That you may not be as old as you - try to look. There's a lot of people trying to look younger than they are. If somebody goes about trying to look older - well, it does make one ask oneself why.", "line": "Having asked questions of so many people - you ask questions of yourself as well? Isn't that overdoing things?", "tactic": "Counter-interrogate and mock his method.", "body": "Exhale the question back at him.", "land": "ISN'T THAT OVERDOING THINGS"}, {"id": "09.13", "beat": 9, "cue": "TROTTER: I might get an answer from myself - I don't get many from you.", "line": "Well, well - try again - that is, if you have any more questions to ask.", "tactic": "Grant him another attempt as if I outrank the interview.", "body": "Open one hand: your move.", "land": "MORE QUESTIONS TO ASK"}, {"id": "09.14", "beat": 9, "cue": "TROTTER: One or two. Where were you coming from last night?", "line": "That is simple - from London.", "tactic": "Answer exactly one layer and no more.", "body": "Clean, immediate, boring.", "land": "SIMPLE - FROM LONDON"}, {"id": "09.15", "beat": 9, "cue": "TROTTER: What address in London?", "line": "I always stay at the Ritz Hotel.", "tactic": "Replace address with image and status.", "body": "Let “Ritz” gleam, then close.", "land": "AT THE RITZ HOTEL"}, {"id": "09.16", "beat": 9, "cue": "TROTTER: Very nice, too, I'm sure. What is your permanent address?", "line": "I dislike permanency.", "tactic": "Make rootlessness a philosophy.", "body": "A soft smile; no apology.", "land": "I DISLIKE PERMANENCY"}, {"id": "09.17", "beat": 9, "cue": "TROTTER: What's your business or profession?", "line": "I play the markets.", "tactic": "Offer a phrase with multiple meanings.", "body": "Underplay it; let him choose the wrong meaning.", "land": "I PLAY THE MARKETS"}, {"id": "09.18", "beat": 9, "cue": "TROTTER: Stockbroker?", "line": "No, no, you misunderstand me.", "tactic": "Correct without clarifying.", "body": "Gentle head shake; protect the ambiguity.", "land": "NO YOU MISUNDERSTAND ME"}, {"id": "09.19", "beat": 9, "cue": "TROTTER: Enjoying this little game, aren't you? Sure of yourself, too. But I shouldn't be too sure. You're mixed up in a murder case, and don't you forget it. Murder isn't just fun and games.", "line": "Not even this murder? (He gives a little giggle, and looks sideways at TROTTER.) Dear me, you're very serious, Sergeant Trotter. I always have thought policemen have no sense of humour. (He rises and moves to left of the sofa.) Is the inquisition over - for the moment?", "turns": "CHALLENGE → GIGGLE → POLICE → ESCAPE", "tactic": "Push the joke until he nearly breaks.", "body": "Giggle sideways, then test whether the interview is over.", "land": "- FOR THE MOMENT"}, {"id": "09.20", "beat": 9, "cue": "TROTTER: For the moment - yes.", "line": "Thank you so much. I shall go and look for your skis in the drawing-room. Just in case someone has hidden them in the grand piano. (PARAVICINI exits down left. TROTTER looks after him, frowning, moves down to the door and opens it. MISS CASEWELL crosses quietly towards the stairs left. TROTTER shuts the door.)", "tactic": "Exit on a joke that also checks the room.", "body": "Rise on permission; leave him with the image.", "land": "IN THE GRAND PIANO"}, {"id": "10.01", "beat": 10, "cue": "TROTTER: I'll get him. (He moves down left to the door.) You get the others. (CHRISTOPHER exits up right.) (opening the door) Mr. Paravicini. (moving below the sofa) Mr. Paravicini. (returning to the door and shouting) Paravicini! (He moves up to centre of the refectory table.)", "line": "Yes, Sergeant? (He moves to the desk chair.) What can I do for you? Little Bo Policeman has lost his skis and doesn't know where to find them. Leave them alone, and they'll come home, dragging a murderer behind them. (He moves down left.)", "turns": "SERVICE → RHYME → SKIS → MURDERER", "tactic": "Re-enter owning the tune and the room.", "body": "Make the rhyme buoyant; watch whether Trotter bites.", "land": "A MURDERER BEHIND THEM"}, {"id": "10.02", "beat": 10, "cue": "TROTTER: No, Mrs. Ralston, but I may say I have a very shrewd suspicion of who took them, and of why they were taken. I won't say any more at the present moment.", "line": "Please don't. (He moves up to the desk chair.) I always think explanations should be kept to the very end. That exciting last chapter, you know.", "tactic": "Protect suspense—and my own information advantage.", "body": "Retreat to the chair while sounding generous.", "land": "LAST CHAPTER YOU KNOW"}, {"id": "10.03", "beat": 10, "cue": "CHRISTOPHER: Isn't it? Now there I think you are wrong. I think it is a game - to somebody.", "line": "You think the murderer is enjoying himself. Maybe - maybe. (He sits in the desk chair.) (GILES and MISS CASEWELL, now quite composed, enter from the stairs left.)", "tactic": "Mirror Christopher and keep the possibility alive.", "body": "Sit; make “maybe” genuinely unreadable.", "land": "HIMSELF MAYBE - MAYBE"}, {"id": "10.04", "beat": 10, "cue": "TROTTER: No, but supposing everyone was to go through these actions a second time.", "line": "(sighing) Ah, that old chestnut. Reconstruction of the crime.", "tactic": "Diminish police procedure as tired theatre.", "body": "Sigh from the audience, not the accused.", "land": "RECONSTRUCTION OF THE CRIME"}, {"id": "10.05", "beat": 10, "cue": "GILES: Paravicini?", "line": "(throwing up his hands) Oh yes, I consent.", "tactic": "Perform extravagant cooperation.", "body": "Hands up: mock surrender.", "land": "OH YES I CONSENT"}, {"id": "10.06", "beat": 10, "cue": "TROTTER: The same actions will be performed, yes.", "line": "(rising) Then I will return to the piano in the drawing-room. Once again I will pick out with one finger the signature tune of a murderer. (He sings, gesturing with his finger.) Tum, dum, dum - dum dum dum... (He moves down left.)", "turns": "ROLE → PIANO → ONE FINGER → SIGNATURE TUNE", "tactic": "Reclaim my chosen role in the reconstruction.", "body": "Rise eagerly and conduct the tune with one finger.", "land": "- DUM DUM DUM"}, {"id": "10.07", "beat": 10, "cue": "TROTTER: Then you could pick it out on the piano with one finger just as Mr. Paravicini did.", "line": "But, Sergeant, I understood that we were each to repeat our former roles.", "tactic": "Object when the rules change under me.", "body": "Stop movement; the melody drops out of the voice.", "land": "REPEAT OUR FORMER ROLES"}, {"id": "10.08", "beat": 10, "cue": "TROTTER: (reeling against the desk) You will all stay in your places and remain there until you hear me call you. (MISS CASEWELL rises and exits up right. GILES moves behind the refectory table and opens the right curtain, MAJOR METCALF exits up left. TROTTER nods to PARAVICINI to leave.)", "line": "(shrugging his shoulders) Parlour games! (PARAVICINI exits up right.)", "tactic": "Dismiss the trap while obeying it.", "body": "Shrug, mask restored, exit without looking back.", "land": "PARLOUR GAMES"}]};
+const BEATS = DATA.beats;
+const CARDS = DATA.cards;
+const KEY = "paravicini-status-v1";
+window.storage = {
+  get: async (k) => { const v = localStorage.getItem(k); return v == null ? null : { key: k, value: v }; },
+  set: async (k, v) => { localStorage.setItem(k, v); return { key: k, value: v }; },
+};
+
+const C = {
+  bg: "#152220", surface: "#1E2F2C", edge: "#2C423E",
+  ink: "#EAE2CF", dim: "#9AA89F", frost: "#B7CDD4", brass: "#C9A24A",
+  ok: "#7FAE86", warn: "#C86D5A",
+};
+const serif = { fontFamily: '"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif' };
+
+function stripDirections(s) { return s.replace(/\([^)]*\)/g, " ").replace(/\s+/g, " ").trim(); }
+function speak(text, rate = 0.95) {
+  if (!("speechSynthesis" in window)) return Promise.resolve();
+  window.speechSynthesis.cancel();
+  return new Promise((res) => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = rate; u.lang = "en-GB";
+    const v = window.speechSynthesis.getVoices().find((x) => x.lang === "en-GB");
+    if (v) u.voice = v;
+    u.onend = res; u.onerror = res;
+    window.speechSynthesis.speak(u);
+  });
+}
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// First letter of each word, punctuation kept, stage directions dropped
+function skeleton(text) {
+  return stripDirections(text).split(" ").map((w) => {
+    const m = w.match(/^([^A-Za-zÀ-ÿ']*)([A-Za-zÀ-ÿ'])([A-Za-zÀ-ÿ']*)(.*)$/);
+    if (!m) return w;
+    return m[1] + m[2] + "_".repeat(Math.max(1, Math.min(m[3].length, 6))) + m[4];
+  }).join(" ");
+}
+// Speech recognition + word-level comparison
+function norm(t) { return stripDirections(t).toLowerCase().replace(/[^a-z0-9'\s]/g, " ").split(/\s+/).filter(Boolean); }
+function listen() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return Promise.reject(new Error("nosr"));
+  return new Promise((res, rej) => {
+    const r = new SR(); r.lang = "en-GB"; r.interimResults = false; r.maxAlternatives = 1; r.continuous = false;
+    let got = "";
+    r.onresult = (e) => { got = Array.from(e.results).map((x) => x[0].transcript).join(" "); };
+    r.onerror = (e) => rej(new Error(e.error || "error"));
+    r.onend = () => res(got);
+    try { r.start(); } catch (e) { rej(e); }
+  });
+}
+// LCS alignment: returns script words flagged hit/miss, plus extra words spoken
+function compare(script, spoken) {
+  const a = norm(script), b = norm(spoken);
+  const n = a.length, m = b.length;
+  const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--)
+    dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  const hit = new Array(n).fill(false), used = new Array(m).fill(false);
+  let i = 0, j = 0;
+  while (i < n && j < m) {
+    if (a[i] === b[j]) { hit[i] = used[j] = true; i++; j++; }
+    else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+  }
+  const extras = b.filter((_, k) => !used[k]);
+  const score = n ? Math.round((hit.filter(Boolean).length / n) * 100) : 0;
+  return { words: a, hit, extras, score };
+}
+
+const STAGES = [
+  ["full", "Whole line"],
+  ["first", "First letters"],
+  ["turns", "Turns only"],
+  ["none", "Nothing"],
+];
+
+// Render a line with stage directions muted
+function Script({ text, size = 22, color = C.ink }) {
+  const parts = text.split(/(\([^)]*\))/g).filter(Boolean);
+  return (
+    <p style={{ ...serif, fontSize: size, lineHeight: 1.45, color, margin: 0 }}>
+      {parts.map((p, i) =>
+        p.startsWith("(") ? <span key={i} style={{ color: C.dim, fontStyle: "italic", fontSize: size * 0.72 }}>{p} </span> : <span key={i}>{p}</span>
+      )}
+    </p>
+  );
+}
+
+function Btn({ children, onClick, tone = "quiet", small, disabled, active }) {
+  const base = {
+    border: "1px solid " + (tone === "brass" ? C.brass : active ? C.frost : C.edge),
+    background: tone === "brass" ? C.brass : active ? "rgba(183,205,212,.12)" : "transparent",
+    color: tone === "brass" ? "#1b1b14" : active ? C.frost : C.ink,
+    borderRadius: 8, padding: small ? "6px 10px" : "12px 16px",
+    fontSize: small ? 13 : 16, fontWeight: 600, cursor: disabled ? "default" : "pointer",
+    opacity: disabled ? 0.4 : 1, fontFamily: "inherit",
+  };
+  return <button style={base} onClick={onClick} disabled={disabled}>{children}</button>;
+}
+
+function ParaviciniDrill() {
+  const [status, setStatus] = useState({});
+  const [loaded, setLoaded] = useState(false);
+  const [view, setView] = useState("drill");
+  const [beatSel, setBeatSel] = useState(new Set([1]));
+  const [shuffle, setShuffle] = useState(false);
+  const [queue, setQueue] = useState([]);
+  const [pos, setPos] = useState(0);
+  const [revealed, setRevealed] = useState(false);
+  const [running, setRunning] = useState(false);
+  const [readLine, setReadLine] = useState(true);
+  const [pace, setPace] = useState(0.45); // seconds per word of pause
+  const runRef = useRef(false);
+  const [learn, setLearn] = useState(false);
+  const [mic, setMic] = useState("idle"); // idle | listening | result | nosr | denied
+  const [result, setResult] = useState(null);
+  async function sayIt() {
+    setResult(null); setMic("listening");
+    try {
+      const heard = await listen();
+      setResult({ heard, ...compare(card.line, heard) }); setMic("result"); setRevealed(true);
+    } catch (e) {
+      setMic(e.message === "nosr" ? "nosr" : "denied");
+    }
+  }
+  const [stage, setStage] = useState(0);
+
+  useEffect(() => {
+    (async () => {
+      try { const r = await window.storage.get(KEY); if (r && r.value) setStatus(JSON.parse(r.value)); } catch (e) {}
+      setLoaded(true);
+    })();
+    if ("speechSynthesis" in window) window.speechSynthesis.getVoices();
+  }, []);
+  async function save(next) {
+    setStatus(next);
+    try { await window.storage.set(KEY, JSON.stringify(next)); } catch (e) {}
+  }
+
+  const pool = useMemo(() => CARDS.filter((c) => beatSel.has(c.beat)), [beatSel]);
+  function rebuild(sh = shuffle) {
+    let q = [...pool];
+    if (sh) for (let i = q.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [q[i], q[j]] = [q[j], q[i]]; }
+    setQueue(q); setPos(0); setRevealed(false);
+  }
+  useEffect(() => { rebuild(); }, [pool]);
+
+  const card = queue[pos];
+  const st = card ? status[card.id] || {} : {};
+
+  function toggleBeat(n) {
+    setBeatSel(n === "all" ? new Set(BEATS.map((b) => b.num)) : new Set([n]));
+  }
+  const allSel = beatSel.size === BEATS.length;
+  function mark(field) {
+    const next = { ...status, [card.id]: { ...st, [field]: !st[field], date: new Date().toISOString().slice(0, 10) } };
+    save(next);
+  }
+  function missed() {
+    const next = { ...status, [card.id]: { ...st, misses: (st.misses || 0) + 1, learned: false } };
+    save(next); advance();
+  }
+  function advance() { setRevealed(false); setLearn(false); setStage(0); setMic("idle"); setResult(null); setPos((p) => (p + 1) % queue.length); }
+  function back() { setRevealed(false); setLearn(false); setStage(0); setMic("idle"); setResult(null); setPos((p) => (p - 1 + queue.length) % queue.length); }
+
+  async function runTrack() {
+    runRef.current = true; setRunning(true);
+    let i = pos;
+    while (runRef.current && i < queue.length) {
+      const c = queue[i]; setPos(i); setRevealed(false);
+      await speak(stripDirections(c.cue));
+      if (!runRef.current) break;
+      const words = stripDirections(c.line).split(" ").length;
+      await wait(Math.max(1500, words * pace * 1000));
+      if (!runRef.current) break;
+      setRevealed(true);
+      if (readLine) await speak(stripDirections(c.line), 1.0);
+      await wait(900);
+      i++;
+    }
+    runRef.current = false; setRunning(false);
+  }
+  function stopTrack() { runRef.current = false; window.speechSynthesis && window.speechSynthesis.cancel(); setRunning(false); }
+
+  const beat = card ? BEATS.find((b) => b.num === card.beat) : null;
+  const counts = useMemo(() => {
+    let l = 0, c = 0, p = 0;
+    CARDS.forEach((k) => { const s = status[k.id] || {}; if (s.learned) l++; if (s.connected) c++; if (s.pressure) p++; });
+    return { l, c, p };
+  }, [status]);
+
+  return (
+    <div style={{ minHeight: "100vh", background: C.bg, color: C.ink, fontFamily: 'system-ui,-apple-system,"Segoe UI",sans-serif', padding: "16px 16px 40px", maxWidth: 560, margin: "0 auto" }}>
+      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
+        <div>
+          <div style={{ ...serif, fontSize: 26, letterSpacing: 0.3 }}>Paravicini</div>
+          <div style={{ color: C.dim, fontSize: 13 }}>The Mousetrap, cue to line</div>
+        </div>
+        <nav style={{ display: "flex", gap: 6 }}>
+          {["drill", "progress"].map((v) => (
+            <Btn key={v} small active={view === v} onClick={() => { stopTrack(); setView(v); }}>{v === "drill" ? "Drill" : "Progress"}</Btn>
+          ))}
+        </nav>
+      </header>
+
+      {view === "drill" && (
+        <>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
+            {BEATS.map((b) => (
+              <button key={b.num} onClick={() => toggleBeat(b.num)} title={b.title}
+                style={{ width: 40, height: 34, borderRadius: 8, border: "1px solid " + (!allSel && beatSel.has(b.num) ? C.brass : C.edge), background: !allSel && beatSel.has(b.num) ? "rgba(201,162,74,.18)" : "transparent", color: !allSel && beatSel.has(b.num) ? C.brass : C.dim, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+                {b.num}
+              </button>
+            ))}
+            <button onClick={() => toggleBeat("all")}
+              style={{ height: 34, padding: "0 12px", borderRadius: 8, border: "1px solid " + (allSel ? C.brass : C.edge), background: allSel ? "rgba(201,162,74,.18)" : "transparent", color: allSel ? C.brass : C.dim, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>All</button>
+            <Btn small active={shuffle} onClick={() => { setShuffle(!shuffle); rebuild(!shuffle); }}>Random order</Btn>
+          </div>
+
+          {beat && (
+            <div style={{ color: C.dim, fontSize: 13, marginBottom: 12, lineHeight: 1.4 }}>
+              <span style={{ color: C.brass, fontWeight: 600 }}>Beat {beat.num}, {beat.title.toLowerCase()}.</span> {beat.engine}
+            </div>
+          )}
+
+          {card && (
+            <section style={{ background: C.surface, border: "1px solid " + C.edge, borderRadius: 14, padding: 18 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", color: C.dim, fontSize: 12, marginBottom: 12 }}>
+                <span>{card.id}</span><span>{pos + 1} of {queue.length}</span>
+              </div>
+              <Script text={card.cue} size={20} color={C.frost} />
+              <div style={{ marginTop: 10, marginBottom: 16 }}>
+                <Btn small onClick={() => speak(stripDirections(card.cue))} disabled={running}>Hear cue</Btn>
+              </div>
+
+              <div style={{ borderTop: "1px solid " + C.edge, paddingTop: 16, minHeight: 90 }}>
+                {learn && !revealed ? (
+                  <>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
+                      {STAGES.map(([k, label], i) => (
+                        (k !== "turns" || card.turns) && <Btn key={k} small active={stage === i} onClick={() => setStage(i)}>{label}</Btn>
+                      ))}
+                    </div>
+                    {STAGES[stage][0] === "full" && <Script text={card.line} />}
+                    {STAGES[stage][0] === "first" && <p style={{ ...serif, fontSize: 20, lineHeight: 1.6, color: C.ink, margin: 0, letterSpacing: 0.5, wordSpacing: 4 }}>{skeleton(card.line)}</p>}
+                    {STAGES[stage][0] === "turns" && <p style={{ ...serif, fontSize: 22, lineHeight: 1.6, color: C.brass, margin: 0 }}>{card.turns}</p>}
+                    {STAGES[stage][0] === "none" && <p style={{ ...serif, fontSize: 18, color: C.dim, margin: 0, fontStyle: "italic" }}>Cue only. Say it, then check.</p>}
+                    <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
+                      <Btn small onClick={() => speak(stripDirections(card.line), 0.9)} disabled={running}>Hear line</Btn>
+                      <Btn small onClick={async () => { await speak(stripDirections(card.cue)); await speak(stripDirections(card.line), 0.9); }} disabled={running}>Cue then line</Btn>
+                      {stage < STAGES.length - 1 ? (
+                        <Btn small tone="brass" onClick={() => setStage((x) => (STAGES[x + 1][0] === "turns" && !card.turns) ? x + 2 : x + 1)}>Said it, less help</Btn>
+                      ) : (
+                        <>
+                          <Btn small tone="brass" onClick={sayIt} disabled={running || mic === "listening"}>{mic === "listening" ? "Listening…" : "Say it, get checked"}</Btn>
+                          <Btn small onClick={() => setRevealed(true)}>Just show it</Btn>
+                        </>
+                      )}
+                    </div>
+                  </>
+                ) : revealed ? (
+                  <>
+                    {result ? (
+                      <>
+                        <p style={{ ...serif, fontSize: 22, lineHeight: 1.5, margin: 0 }}>
+                          {result.words.map((w, k) => (
+                            <span key={k} style={{ color: result.hit[k] ? C.ink : C.warn, textDecoration: result.hit[k] ? "none" : "underline", textDecorationStyle: "dotted" }}>{w} </span>
+                          ))}
+                        </p>
+                        <div style={{ marginTop: 10, fontSize: 13, color: C.dim }}>
+                          <span style={{ color: result.score >= 90 ? C.ok : result.score >= 70 ? C.brass : C.warn, fontWeight: 700, fontSize: 16 }}>{result.score}%</span> of the words landed.
+                          {result.extras.length > 0 && <span> Not in the script: <span style={{ color: C.warn }}>{result.extras.join(", ")}</span>.</span>}
+                        </div>
+                        <details style={{ marginTop: 8, fontSize: 13, color: C.dim }}><summary style={{ cursor: "pointer" }}>Exact script</summary><div style={{ marginTop: 6 }}><Script text={card.line} size={17} /></div></details>
+                      </>
+                    ) : <Script text={card.line} />}
+                    {card.turns && <div style={{ marginTop: 12, color: C.brass, fontSize: 13, letterSpacing: 0.5 }}>{card.turns}</div>}
+                    <div style={{ marginTop: 8, color: C.dim, fontSize: 13, lineHeight: 1.4 }}>{card.tactic} {card.body && <span style={{ fontStyle: "italic" }}>{card.body}</span>}</div>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={() => setRevealed(true)} style={{ width: "100%", padding: "22px 12px", background: "transparent", border: "1px dashed " + C.edge, borderRadius: 10, color: C.dim, fontSize: 15, cursor: "pointer", fontFamily: "inherit" }}>
+                      Say the line out loud, then tap to check
+                    </button>
+                    <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      <Btn small tone="brass" onClick={sayIt} disabled={running || mic === "listening"}>{mic === "listening" ? "Listening…" : "Say it, get checked"}</Btn>
+                      <Btn small onClick={() => { setLearn(true); setStage(0); }}>Don't know it yet, learn it</Btn>
+                    </div>
+                    {mic === "nosr" && <div style={{ color: C.warn, fontSize: 13, marginTop: 8 }}>This browser can't do speech recognition. Chrome or Safari on the phone should.</div>}
+                    {mic === "denied" && <div style={{ color: C.warn, fontSize: 13, marginTop: 8 }}>Couldn't use the microphone here. If the app is inside Claude, check Chrome's site permissions for the microphone, and make sure the page is opened over https.</div>}
+                  </>
+                )}
+              </div>
+
+              {revealed && !running && (
+                <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+                  <div style={{ flex: 1 }}><Btn onClick={missed}>Missed</Btn></div>
+                  <div style={{ flex: 2 }}><Btn tone="brass" onClick={advance}>Got it, next</Btn></div>
+                </div>
+              )}
+
+              <div style={{ display: "flex", gap: 6, marginTop: 14, flexWrap: "wrap" }}>
+                {[["learned", "Learned"], ["connected", "Connected"], ["pressure", "Pressure-tested"]].map(([k, label]) => (
+                  <button key={k} onClick={() => mark(k)} style={{ padding: "5px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "1px solid " + (st[k] ? C.ok : C.edge), background: st[k] ? "rgba(127,174,134,.15)" : "transparent", color: st[k] ? C.ok : C.dim }}>
+                    {st[k] ? "✓ " : ""}{label}
+                  </button>
+                ))}
+                {st.misses > 0 && <span style={{ color: C.warn, fontSize: 12, alignSelf: "center" }}>missed {st.misses}×</span>}
+              </div>
+            </section>
+          )}
+
+          <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+            <Btn small onClick={back} disabled={running}>Back</Btn>
+            <Btn small onClick={advance} disabled={running}>Skip</Btn>
+            <div style={{ flex: 1 }} />
+            {running ? <Btn small tone="brass" onClick={stopTrack}>Stop cue track</Btn> : <Btn small onClick={runTrack}>Play cue track</Btn>}
+          </div>
+          <div style={{ marginTop: 10, color: C.dim, fontSize: 12, display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
+            <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              <input type="checkbox" checked={readLine} onChange={(e) => setReadLine(e.target.checked)} /> read the line back after the pause
+            </label>
+            <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              pause <input type="range" min="0.2" max="0.9" step="0.05" value={pace} onChange={(e) => setPace(+e.target.value)} style={{ width: 90 }} /> {pace.toFixed(2)}s/word
+            </label>
+          </div>
+        </>
+      )}
+
+      {view === "progress" && (
+        <>
+          <div style={{ display: "flex", gap: 18, marginBottom: 18, ...serif, fontSize: 15 }}>
+            <span><b style={{ color: C.ok, fontSize: 22 }}>{counts.l}</b><span style={{ color: C.dim }}> /77 learned</span></span>
+            <span><b style={{ color: C.ok, fontSize: 22 }}>{counts.c}</b><span style={{ color: C.dim }}> connected</span></span>
+            <span><b style={{ color: C.ok, fontSize: 22 }}>{counts.p}</b><span style={{ color: C.dim }}> pressure-tested</span></span>
+          </div>
+          {BEATS.map((b) => (
+            <div key={b.num} style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 13, color: C.dim, marginBottom: 6 }}><span style={{ color: C.brass, fontWeight: 600 }}>{b.num}</span> {b.title.toLowerCase()}</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                {CARDS.filter((c) => c.beat === b.num).map((c) => {
+                  const s = status[c.id] || {};
+                  const n = (s.learned ? 1 : 0) + (s.connected ? 1 : 0) + (s.pressure ? 1 : 0);
+                  const bg = n === 3 ? C.ok : n === 2 ? "rgba(127,174,134,.55)" : n === 1 ? "rgba(127,174,134,.25)" : "transparent";
+                  return (
+                    <button key={c.id} title={c.id + " " + c.line.slice(0, 40)}
+                      onClick={() => { setBeatSel(new Set([b.num])); setView("drill"); setTimeout(() => { const i = CARDS.filter((k) => k.beat === b.num).findIndex((k) => k.id === c.id); setShuffle(false); setPos(i); }, 0); }}
+                      style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid " + (s.misses >= 2 ? C.warn : C.edge), background: bg, cursor: "pointer", fontSize: 10, color: s.misses >= 2 ? C.warn : C.dim }}>
+                      {s.misses > 0 ? s.misses : ""}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+          {(() => {
+            const worst = CARDS.filter((c) => (status[c.id] || {}).misses >= 2).sort((a, b) => status[b.id].misses - status[a.id].misses).slice(0, 8);
+            return worst.length ? (
+              <div style={{ marginTop: 20, borderTop: "1px solid " + C.edge, paddingTop: 14 }}>
+                <div style={{ ...serif, fontSize: 18, marginBottom: 8 }}>Repair list</div>
+                {worst.map((c) => (
+                  <div key={c.id} style={{ fontSize: 13, color: C.dim, marginBottom: 6 }}>
+                    <span style={{ color: C.warn }}>{c.id}</span> {stripDirections(c.cue).slice(0, 50)} → <span style={{ color: C.ink }}>{stripDirections(c.line).slice(0, 50)}</span>
+                  </div>
+                ))}
+              </div>
+            ) : null;
+          })()}
+          <div style={{ marginTop: 28 }}>
+            <Btn small onClick={() => { if (confirm("Clear all progress?")) save({}); }}>Reset progress</Btn>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<ParaviciniDrill />);
+</script>
+</body>
+</html>
