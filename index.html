@@ -144,6 +144,8 @@ function ParaviciniDrill() {
   const [readLine, setReadLine] = useState(true);
   const [pace, setPace] = useState(0.45); // seconds per word of pause
   const runRef = useRef(false);
+  const trackVersion = useRef(0);
+  const pendingLine = useRef(null);
   const [learn, setLearn] = useState(false);
   const [mic, setMic] = useState("idle"); // idle | listening | result | nosr | denied
   const [result, setResult] = useState(null);
@@ -178,9 +180,13 @@ function ParaviciniDrill() {
 
   const pool = useMemo(() => CARDS.filter((c) => beatSel.has(c.beat)), [beatSel]);
   function rebuild(sh = shuffle) {
+    stopTrack(); cancelListen();
     let q = [...pool];
     if (sh) for (let i = q.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [q[i], q[j]] = [q[j], q[i]]; }
-    setQueue(q); setPos(0); setRevealed(false);
+    const target = pendingLine.current;
+    pendingLine.current = null;
+    setQueue(q); setPos(Math.max(0, q.findIndex((c) => c.id === target))); setRevealed(false);
+    setLearn(false); setStage(0); setResult(null);
   }
   useEffect(() => { rebuild(); }, [pool]);
 
@@ -191,6 +197,16 @@ function ParaviciniDrill() {
     setBeatSel(n === "all" ? new Set(BEATS.map((b) => b.num)) : new Set([n]));
   }
   const allSel = beatSel.size === BEATS.length;
+  function pickLine(id) {
+    const i = queue.findIndex((c) => c.id === id);
+    if (i < 0) return;
+    stopTrack(); cancelListen();
+    setPos(i); setRevealed(false); setLearn(false); setStage(0); setResult(null);
+  }
+  function openLine(c) {
+    pendingLine.current = c.id;
+    setShuffle(false); setBeatSel(new Set([c.beat])); setView("drill");
+  }
   function mark(field) {
     const next = { ...status, [card.id]: { ...st, [field]: !st[field], date: new Date().toISOString().slice(0, 10) } };
     save(next);
@@ -203,23 +219,26 @@ function ParaviciniDrill() {
   function back() { cancelListen(); setRevealed(false); setLearn(false); setStage(0); setResult(null); setPos((p) => (p - 1 + queue.length) % queue.length); }
 
   async function runTrack() {
+    const version = ++trackVersion.current;
     runRef.current = true; setRunning(true);
     let i = pos;
     while (runRef.current && i < queue.length) {
       const c = queue[i]; setPos(i); setRevealed(false);
       await speak(stripDirections(c.cue));
-      if (!runRef.current) break;
+      if (!runRef.current || version !== trackVersion.current) return;
       const words = stripDirections(c.line).split(" ").length;
       await wait(Math.max(1500, words * pace * 1000));
-      if (!runRef.current) break;
+      if (!runRef.current || version !== trackVersion.current) return;
       setRevealed(true);
       if (readLine) await speak(stripDirections(c.line), 1.0);
+      if (!runRef.current || version !== trackVersion.current) return;
       await wait(900);
+      if (!runRef.current || version !== trackVersion.current) return;
       i++;
     }
     runRef.current = false; setRunning(false);
   }
-  function stopTrack() { runRef.current = false; window.speechSynthesis && window.speechSynthesis.cancel(); setRunning(false); }
+  function stopTrack() { trackVersion.current++; runRef.current = false; window.speechSynthesis && window.speechSynthesis.cancel(); setRunning(false); }
 
   const beat = card ? BEATS.find((b) => b.num === card.beat) : null;
   const counts = useMemo(() => {
@@ -259,6 +278,23 @@ function ParaviciniDrill() {
           {beat && (
             <div style={{ color: C.dim, fontSize: 13, marginBottom: 12, lineHeight: 1.4 }}>
               <span style={{ color: C.brass, fontWeight: 600 }}>Beat {beat.num}, {beat.title.toLowerCase()}.</span> {beat.engine}
+            </div>
+          )}
+
+          {card && (
+            <div style={{ marginBottom: 14 }}>
+              <label htmlFor="line-picker" style={{ display: "block", color: C.dim, fontSize: 13, marginBottom: 6 }}>Pick a line to practice</label>
+              <select id="line-picker" value={card.id} onChange={(e) => pickLine(e.target.value)}
+                style={{ width: "100%", minHeight: 44, padding: "10px", borderRadius: 8, border: "1px solid " + C.edge, background: C.surface, color: C.ink, fontFamily: "inherit", fontSize: 16 }}>
+                {BEATS.filter((b) => beatSel.has(b.num)).map((b) => (
+                  <optgroup key={b.num} label={"Beat " + b.num + ": " + b.title.toLowerCase()}>
+                    {CARDS.filter((c) => c.beat === b.num).map((c) => {
+                      const preview = stripDirections(c.line);
+                      return <option key={c.id} value={c.id}>{c.id} — {preview.slice(0, 85)}{preview.length > 85 ? "…" : ""}</option>;
+                    })}
+                  </optgroup>
+                ))}
+              </select>
             </div>
           )}
 
@@ -386,7 +422,7 @@ function ParaviciniDrill() {
                   const bg = n === 3 ? C.ok : n === 2 ? "rgba(127,174,134,.55)" : n === 1 ? "rgba(127,174,134,.25)" : "transparent";
                   return (
                     <button key={c.id} title={c.id + " " + c.line.slice(0, 40)}
-                      onClick={() => { setBeatSel(new Set([b.num])); setView("drill"); setTimeout(() => { const i = CARDS.filter((k) => k.beat === b.num).findIndex((k) => k.id === c.id); setShuffle(false); setPos(i); }, 0); }}
+                      onClick={() => openLine(c)}
                       style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid " + (s.misses >= 2 ? C.warn : C.edge), background: bg, cursor: "pointer", fontSize: 10, color: s.misses >= 2 ? C.warn : C.dim }}>
                       {s.misses > 0 ? s.misses : ""}
                     </button>
