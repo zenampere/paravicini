@@ -146,6 +146,11 @@ function ParaviciniDrill() {
   const runRef = useRef(false);
   const trackVersion = useRef(0);
   const pendingLine = useRef(null);
+  const [hintWords, setHintWords] = useState(0);
+  const [weakIds, setWeakIds] = useState(null);
+  const [loop, setLoop] = useState(false);
+  const [loopStart, setLoopStart] = useState(0);
+  const [loopEnd, setLoopEnd] = useState(0);
   const [learn, setLearn] = useState(false);
   const [mic, setMic] = useState("idle"); // idle | listening | result | nosr | denied
   const [result, setResult] = useState(null);
@@ -169,6 +174,11 @@ function ParaviciniDrill() {
   useEffect(() => {
     (async () => {
       try { const r = await window.storage.get(KEY); if (r && r.value) setStatus(JSON.parse(r.value)); } catch (e) {}
+      try {
+        const saved = JSON.parse(localStorage.getItem("paravicini-place-v1"));
+        const previous = saved && CARDS.find((c) => c.id === saved.id);
+        if (previous) { pendingLine.current = previous.id; setBeatSel(new Set([previous.beat])); }
+      } catch (e) {}
       setLoaded(true);
     })();
     if ("speechSynthesis" in window) window.speechSynthesis.getVoices();
@@ -178,22 +188,28 @@ function ParaviciniDrill() {
     try { await window.storage.set(KEY, JSON.stringify(next)); } catch (e) {}
   }
 
-  const pool = useMemo(() => CARDS.filter((c) => beatSel.has(c.beat)), [beatSel]);
+  const pool = useMemo(() => CARDS.filter((c) => beatSel.has(c.beat) && (!weakIds || weakIds.includes(c.id))), [beatSel, weakIds]);
   function rebuild(sh = shuffle) {
     stopTrack(); cancelListen();
     let q = [...pool];
-    if (sh) for (let i = q.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [q[i], q[j]] = [q[j], q[i]]; }
+    if (sh && !loop) for (let i = q.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [q[i], q[j]] = [q[j], q[i]]; }
     const target = pendingLine.current;
     pendingLine.current = null;
     setQueue(q); setPos(Math.max(0, q.findIndex((c) => c.id === target))); setRevealed(false);
-    setLearn(false); setStage(0); setResult(null);
+    setLearn(false); setStage(0); setResult(null); setHintWords(0);
+    setLoopStart(0); setLoopEnd(Math.max(0, q.length - 1));
   }
-  useEffect(() => { rebuild(); }, [pool]);
+  useEffect(() => { if (loaded) rebuild(); }, [pool, loaded]);
 
   const card = queue[pos];
   const st = card ? status[card.id] || {} : {};
+  useEffect(() => {
+    if (loaded && card) { try { localStorage.setItem("paravicini-place-v1", JSON.stringify({ id: card.id })); } catch (e) {} }
+  }, [loaded, card]);
+  useEffect(() => { setHintWords(0); }, [card]);
 
   function toggleBeat(n) {
+    setWeakIds(null); setLoop(false);
     setBeatSel(n === "all" ? new Set(BEATS.map((b) => b.num)) : new Set([n]));
   }
   const allSel = beatSel.size === BEATS.length;
@@ -201,9 +217,11 @@ function ParaviciniDrill() {
     const i = queue.findIndex((c) => c.id === id);
     if (i < 0) return;
     stopTrack(); cancelListen();
-    setPos(i); setRevealed(false); setLearn(false); setStage(0); setResult(null);
+    if (loop && (i < loopStart || i > loopEnd)) setLoop(false);
+    setPos(i); setRevealed(false); setLearn(false); setStage(0); setResult(null); setHintWords(0);
   }
   function openLine(c) {
+    setWeakIds(null); setLoop(false);
     pendingLine.current = c.id;
     setShuffle(false); setBeatSel(new Set([c.beat])); setView("drill");
   }
@@ -215,10 +233,26 @@ function ParaviciniDrill() {
     const next = { ...status, [card.id]: { ...st, misses: (st.misses || 0) + 1, learned: false } };
     save(next); advance();
   }
-  function advance() { cancelListen(); setRevealed(false); setLearn(false); setStage(0); setResult(null); setPos((p) => (p + 1) % queue.length); }
-  function back() { cancelListen(); setRevealed(false); setLearn(false); setStage(0); setResult(null); setPos((p) => (p - 1 + queue.length) % queue.length); }
+  function advance() { if (card) pickLine(queue[loop ? (pos >= loopEnd ? loopStart : pos + 1) : (pos + 1) % queue.length].id); }
+  function back() { if (card) pickLine(queue[loop ? (pos <= loopStart ? loopEnd : pos - 1) : (pos - 1 + queue.length) % queue.length].id); }
+  function practiceWeak() {
+    stopTrack(); setLoop(false); setShuffle(false);
+    setWeakIds(weakIds ? null : CARDS.filter((c) => (status[c.id]?.misses || 0) > 0 && !status[c.id]?.learned).map((c) => c.id));
+  }
+  function toggleLoop() {
+    stopTrack();
+    if (loop) { setLoop(false); return; }
+    const ordered = [...pool];
+    setShuffle(false); setQueue(ordered); setLoop(true); setLoopStart(0); setLoopEnd(ordered.length - 1);
+    cancelListen(); setPos(0); setRevealed(false); setLearn(false); setResult(null); setHintWords(0);
+  }
+  function changeRange(start, end) {
+    pickLine(queue[start].id); setLoop(true); setLoopStart(start); setLoopEnd(end);
+  }
 
   async function runTrack() {
+    if (!card) return;
+    cancelListen(); setLearn(false); setResult(null); setHintWords(0);
     const version = ++trackVersion.current;
     runRef.current = true; setRunning(true);
     let i = pos;
@@ -234,7 +268,7 @@ function ParaviciniDrill() {
       if (!runRef.current || version !== trackVersion.current) return;
       await wait(900);
       if (!runRef.current || version !== trackVersion.current) return;
-      i++;
+      i = loop && i >= loopEnd ? loopStart : i + 1;
     }
     runRef.current = false; setRunning(false);
   }
@@ -272,8 +306,27 @@ function ParaviciniDrill() {
             ))}
             <button onClick={() => toggleBeat("all")}
               style={{ height: 34, padding: "0 12px", borderRadius: 8, border: "1px solid " + (allSel ? C.brass : C.edge), background: allSel ? "rgba(201,162,74,.18)" : "transparent", color: allSel ? C.brass : C.dim, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>All</button>
-            <Btn small active={shuffle} onClick={() => { setShuffle(!shuffle); rebuild(!shuffle); }}>Random order</Btn>
+            <Btn small active={shuffle} disabled={loop} onClick={() => { setShuffle(!shuffle); rebuild(!shuffle); }}>Random order</Btn>
+            <Btn small active={!!weakIds} onClick={practiceWeak}>Weak lines</Btn>
+            <Btn small active={loop} disabled={!card} onClick={toggleLoop}>Loop passage</Btn>
           </div>
+          {weakIds && <p style={{ color: C.dim, fontSize: 13 }}>Practicing missed lines in the selected beats that aren't marked Learned. Tap Weak lines again to return to all lines.</p>}
+          {loaded && !card && <p style={{ color: C.dim }}>No weak lines in this selection. Choose another beat or turn off Weak lines.</p>}
+          {loop && card && (
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
+              {[["From", loopStart], ["Through", loopEnd]].map(([label, value], index) => (
+                <label key={label} style={{ color: C.dim, fontSize: 13 }}>{label}{" "}
+                  <select aria-label={label + " line"} value={value} onChange={(e) => {
+                    const value = Number(e.target.value);
+                    changeRange(index === 0 ? value : Math.min(loopStart, value), index === 1 ? value : Math.max(loopEnd, value));
+                  }} style={{ background: C.surface, color: C.ink, border: "1px solid " + C.edge, borderRadius: 8, padding: 10, fontSize: 16 }}>
+                    {queue.map((c, i) => <option key={c.id} value={i}>{c.id}</option>)}
+                  </select>
+                </label>
+              ))}
+              <span style={{ color: C.dim, fontSize: 13 }}>Next and the cue track repeat this passage until you turn looping off.</span>
+            </div>
+          )}
 
           {beat && (
             <div style={{ color: C.dim, fontSize: 13, marginBottom: 12, lineHeight: 1.4 }}>
@@ -283,13 +336,13 @@ function ParaviciniDrill() {
 
           {card && (
             <div style={{ marginBottom: 14 }}>
-              <label htmlFor="line-picker" style={{ display: "block", color: C.dim, fontSize: 13, marginBottom: 6 }}>Pick a line to practice</label>
+              <label htmlFor="line-picker" style={{ display: "block", color: C.dim, fontSize: 13, marginBottom: 6 }}>Jump to a cue</label>
               <select id="line-picker" value={card.id} onChange={(e) => pickLine(e.target.value)}
                 style={{ width: "100%", minHeight: 44, padding: "10px", borderRadius: 8, border: "1px solid " + C.edge, background: C.surface, color: C.ink, fontFamily: "inherit", fontSize: 16 }}>
                 {BEATS.filter((b) => beatSel.has(b.num)).map((b) => (
                   <optgroup key={b.num} label={"Beat " + b.num + ": " + b.title.toLowerCase()}>
-                    {CARDS.filter((c) => c.beat === b.num).map((c) => {
-                      const preview = stripDirections(c.line);
+                    {pool.filter((c) => c.beat === b.num).map((c) => {
+                      const preview = stripDirections(c.cue);
                       return <option key={c.id} value={c.id}>{c.id} — {preview.slice(0, 85)}{preview.length > 85 ? "…" : ""}</option>;
                     })}
                   </optgroup>
@@ -309,6 +362,12 @@ function ParaviciniDrill() {
               </div>
 
               <div style={{ borderTop: "1px solid " + C.edge, paddingTop: 16, minHeight: 90 }}>
+                {!revealed && !running && (
+                  <div style={{ marginBottom: 14 }}>
+                    <Btn small onClick={() => setHintWords((n) => n + 3)} disabled={hintWords >= stripDirections(card.line).split(/\s+/).length}>{hintWords ? "A little more" : "Small hint"}</Btn>
+                    {hintWords > 0 && <p style={{ ...serif, color: C.brass, fontSize: 19, marginBottom: 0 }}>{stripDirections(card.line).split(/\s+/).slice(0, hintWords).join(" ")}{hintWords < stripDirections(card.line).split(/\s+/).length ? " …" : ""}</p>}
+                  </div>
+                )}
                 {learn && !revealed ? (
                   <>
                     <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>
@@ -371,7 +430,8 @@ function ParaviciniDrill() {
               </div>
 
               {revealed && !running && (
-                <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+                <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
+                  <Btn onClick={() => pickLine(card.id)}>Try again</Btn>
                   <div style={{ flex: 1 }}><Btn onClick={missed}>Missed</Btn></div>
                   <div style={{ flex: 2 }}><Btn tone="brass" onClick={advance}>Got it, next</Btn></div>
                 </div>
@@ -392,7 +452,7 @@ function ParaviciniDrill() {
             <Btn small onClick={back} disabled={running}>Back</Btn>
             <Btn small onClick={advance} disabled={running}>Skip</Btn>
             <div style={{ flex: 1 }} />
-            {running ? <Btn small tone="brass" onClick={stopTrack}>Stop cue track</Btn> : <Btn small onClick={runTrack}>Play cue track</Btn>}
+            {running ? <Btn small tone="brass" onClick={stopTrack}>Stop cue track</Btn> : <Btn small onClick={runTrack} disabled={!card}>Play cue track</Btn>}
           </div>
           <div style={{ marginTop: 10, color: C.dim, fontSize: 12, display: "flex", gap: 14, flexWrap: "wrap", alignItems: "center" }}>
             <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -421,7 +481,7 @@ function ParaviciniDrill() {
                   const n = (s.learned ? 1 : 0) + (s.connected ? 1 : 0) + (s.pressure ? 1 : 0);
                   const bg = n === 3 ? C.ok : n === 2 ? "rgba(127,174,134,.55)" : n === 1 ? "rgba(127,174,134,.25)" : "transparent";
                   return (
-                    <button key={c.id} title={c.id + " " + c.line.slice(0, 40)}
+                    <button key={c.id} title={c.id + " — " + stripDirections(c.cue)} aria-label={"Practice " + c.id + ": " + stripDirections(c.cue)}
                       onClick={() => openLine(c)}
                       style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid " + (s.misses >= 2 ? C.warn : C.edge), background: bg, cursor: "pointer", fontSize: 10, color: s.misses >= 2 ? C.warn : C.dim }}>
                       {s.misses > 0 ? s.misses : ""}
@@ -438,7 +498,7 @@ function ParaviciniDrill() {
                 <div style={{ ...serif, fontSize: 18, marginBottom: 8 }}>Repair list</div>
                 {worst.map((c) => (
                   <div key={c.id} style={{ fontSize: 13, color: C.dim, marginBottom: 6 }}>
-                    <span style={{ color: C.warn }}>{c.id}</span> {stripDirections(c.cue).slice(0, 50)} → <span style={{ color: C.ink }}>{stripDirections(c.line).slice(0, 50)}</span>
+                    <span style={{ color: C.warn }}>{c.id}</span> {stripDirections(c.cue).slice(0, 80)}
                   </div>
                 ))}
               </div>
