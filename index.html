@@ -550,8 +550,12 @@ function ParaviciniDrill() {
               )}
 
               <div style={{ display: "flex", gap: 6, marginTop: 14, flexWrap: "wrap" }}>
-                {[["learned", "Learned"], ["connected", "Connected"], ["pressure", "Pressure-tested"]].map(([k, label]) => (
-                  <button key={k} onClick={() => mark(k)} style={{ padding: "5px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "1px solid " + (st[k] ? C.ok : C.edge), background: st[k] ? "rgba(127,174,134,.15)" : "transparent", color: st[k] ? C.ok : C.dim }}>
+                {[
+                  ["learned", "Learned", "Mark this when you can say the whole line from its cue without looking or using hints."],
+                  ["connected", "Connected", "Mark this when the line flows from your scene partner's cue, with the intention and movement you want to use onstage."],
+                  ["pressure", "Pressure-tested", "Mark this when you can reliably deliver the line in a run-through or rehearsal, with movement, distractions, and performance pace."]
+                ].map(([k, label, help]) => (
+                  <button key={k} title={help + " Click again to unmark it."} aria-description={help} aria-pressed={!!st[k]} onClick={() => mark(k)} style={{ padding: "5px 10px", borderRadius: 999, fontSize: 12, fontWeight: 600, cursor: "pointer", border: "1px solid " + (st[k] ? C.ok : C.edge), background: st[k] ? "rgba(127,174,134,.15)" : "transparent", color: st[k] ? C.ok : C.dim }}>
                     {st[k] ? "✓ " : ""}{label}
                   </button>
                 ))}
